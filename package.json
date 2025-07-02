@@ -14,5 +14,12 @@
     "url": "https://github.com/jolantasi/myFlix-client/issues"
   },
   "homepage": "https://github.com/jolantasi/myFlix-client#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.15.4"
+  }
 }
