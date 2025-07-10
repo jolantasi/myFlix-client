@@ -1,9 +1,8 @@
 {
-  "name": "myflix-client",
-  "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "parcel index.html",
+  "build": "parcel build index.html"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jolantasi/myFlix-client.git"
@@ -14,12 +13,15 @@
     "url": "https://github.com/jolantasi/myFlix-client/issues"
   },
   "homepage": "https://github.com/jolantasi/myFlix-client#readme",
-  "description": "",
   "dependencies": {
+    "prop-types": "^15.8.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.15.4"
-  }
+    "@parcel/transformer-sass": "^2.15.4",
+    "parcel": "^2.15.4"
+  },
+  "keywords": [],
+  "description": ""
 }
