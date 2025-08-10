@@ -16,24 +16,32 @@ export const MainView = () => {
   const [showSignup, setShowSignup] = useState(false);
 
   // Fetch movies when logged in
-useEffect(() => {
-  if (!token) return; // Do nothing if no token yet
+  useEffect(() => {
+    if (!token) return; // Do nothing if no token yet
 
-  fetch('https://myflix-movieapi.onrender.com/movies', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error('Failed to fetch movies');
-      return res.json();
+    fetch('https://myflix-movieapi.onrender.com/movies', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     })
-    .then((data) => setMovies(data))
-    .catch((err) => console.error('Error fetching movies:', err));
-}, [token]);
-
+      .then((res) => {
+        if (res.status === 401) {
+          // Token is invalid or expired → log out
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+          setToken(null);
+          setMovies([]);
+          throw new Error('Session expired. Please log in again.');
+        }
+        if (!res.ok) throw new Error('Failed to fetch movies');
+        return res.json();
+      })
+      .then((data) => setMovies(data))
+      .catch((err) => console.error(err.message));
+  }, [token]);
 
   // If not logged in → show login or signup
   if (!user) {
@@ -42,9 +50,7 @@ useEffect(() => {
         {showSignup ? (
           <>
             <SignupView
-              onSignedUp={() => {
-                setShowSignup(false); // Go back to login after signup
-              }}
+              onSignedUp={() => setShowSignup(false)} // Go back to login after signup
             />
             <p>
               Already have an account?{' '}

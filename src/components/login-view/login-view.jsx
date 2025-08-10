@@ -8,7 +8,7 @@ export const LoginView = ({ onLoggedIn }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-// Basic validation
+    // Basic validation
     if (!username || !password) {
       setError('Please enter both username and password.');
       return;
