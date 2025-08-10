@@ -1,105 +1,50 @@
 // src/main-view/main-view.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
-import { LoginView } from '../login-view/login-view';
-import { SignupView } from '../signup-view/signup-view';
 
 export const MainView = () => {
-  const storedUser = JSON.parse(localStorage.getItem('user'));
-  const storedToken = localStorage.getItem('token');
-
-  const [user, setUser] = useState(storedUser ? storedUser : null);
-  const [token, setToken] = useState(storedToken ? storedToken : null);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [movies, setMovies] = useState([]);
-  const [showSignup, setShowSignup] = useState(false);
 
-  // Fetch movies when logged in
-useEffect(() => {
-  if (!token) return; // Do nothing if no token yet
-
-  fetch('https://myflix-movieapi.onrender.com/movies', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+  const movies = [
+    {
+      _id: '1',
+      title: 'Inception',
+      description: 'A thief who steals corporate secrets through dream-sharing technology...',
+      image: 'https://image.tmdb.org/t/p/w185https://media.themoviedb.org/t/p/w440_and_h660_face/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg',
+      genre: 'Sci-Fi',
+      director: 'Christopher Nolan'
+    },
+    {
+      _id: '2',
+      title: 'The Matrix',
+      description: 'A computer hacker learns about the true nature of reality and his role in the war...',
+      image: 'https://media.themoviedb.org/t/p/w440_and_h660_face/sRaupdJawe6UTS0t77vwJoLjd7h.jpg',
+      genre: 'Action',
+      director: 'The Wachowskis'
+    },
+    {
+      _id: '3',
+      title: 'Interstellar',
+      description: 'A team of explorers travel through a wormhole in space...',
+      image: 'https://image.tmdb.org/t/p/w500/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg',
+      genre: 'Adventure',
+      director: 'Christopher Nolan'
     }
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error('Failed to fetch movies');
-      return res.json();
-    })
-    .then((data) => setMovies(data))
-    .catch((err) => console.error('Error fetching movies:', err));
-}, [token]);
+  ];
 
-
-  // If not logged in → show login or signup
-  if (!user) {
-    return (
-      <div>
-        {showSignup ? (
-          <>
-            <SignupView
-              onSignedUp={() => {
-                setShowSignup(false); // Go back to login after signup
-              }}
-            />
-            <p>
-              Already have an account?{' '}
-              <button onClick={() => setShowSignup(false)}>Log in</button>
-            </p>
-          </>
-        ) : (
-          <>
-            <LoginView
-              onLoggedIn={(user, token) => {
-                setUser(user);
-                setToken(token);
-              }}
-            />
-            <p>
-              Don’t have an account?{' '}
-              <button onClick={() => setShowSignup(true)}>Sign up</button>
-            </p>
-          </>
-        )}
-      </div>
-    );
-  }
-
-  // If a movie is selected → show movie details
   if (selectedMovie) {
     return (
       <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
     );
   }
 
-  // Logged-in view → show movies & logout
   return (
     <div>
-      <h1>Welcome, {user.Username}</h1>
-      <button
-        onClick={() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          setUser(null);
-          setToken(null);
-          setMovies([]);
-        }}
-      >
-        Logout
-      </button>
-
-      <h2>Movie List</h2>
-      {movies.length === 0 ? (
-        <p>Loading movies...</p>
-      ) : (
-        movies.map((movie) => (
-          <MovieCard key={movie._id} movie={movie} onMovieClick={setSelectedMovie} />
-        ))
-      )}
+      <h1>Movie List</h1>
+      {movies.map((movie) => (
+        <MovieCard key={movie._id} movie={movie} onMovieClick={setSelectedMovie} />
+      ))}
     </div>
   );
 };
