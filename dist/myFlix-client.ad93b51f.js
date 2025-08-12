@@ -19506,8 +19506,8 @@ const LoginView = ({ onLoggedIn })=>{
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                Username: username,
-                Password: password
+                username,
+                password
             })
         }).then((response)=>{
             if (!response.ok) throw new Error("Login failed");

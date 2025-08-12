@@ -12,7 +12,7 @@ export const LoginView = ({ onLoggedIn }) => {
     fetch("https://myflix-movieapi.onrender.com/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ Username: username, Password: password })
+      body: JSON.stringify({ username, password })
     })
       .then((response) => {
         if (!response.ok) {
