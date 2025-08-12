@@ -29,10 +29,10 @@ export const SignupView = ({ onSignedUp }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        Username: username,
-        Password: password,
-        Email: email,
-        Birthday: birthday
+        username: username,
+        password: password,
+        email: email,
+        Birthday: Birthday
       })
     })
       .then((response) => {

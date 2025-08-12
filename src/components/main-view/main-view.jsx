@@ -70,18 +70,6 @@ export const MainView = () => {
     },
   ];
 
-  // Show login screen if not logged in
-  if (!user) {
-    return (
-      <LoginView
-        onLoggedIn={(userData, token) => {
-          setUser(userData);
-          setToken(token);
-        }}
-      />
-    );
-  }
-
   // Show movie details if one is selected
   if (selectedMovie) {
     return (
