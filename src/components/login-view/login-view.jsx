@@ -1,4 +1,3 @@
-// src/components/login-view/login-view.jsx
 import React, { useState } from "react";
 
 export const LoginView = ({ onLoggedIn }) => {
@@ -8,27 +7,34 @@ export const LoginView = ({ onLoggedIn }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setError(""); // Clear previous errors
 
     fetch("https://myflix-movieapi.onrender.com/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password }),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
-          throw new Error("Login failed");
+          // Try to read error message from API
+          const errData = await response.json().catch(() => null);
+          const message = errData?.message || "Login failed";
+          throw new Error(message);
         }
         return response.json();
       })
       .then((data) => {
+        if (!data.token || !data.user) {
+          throw new Error("Invalid response from server");
+        }
         // Save token and user info
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        onLoggedIn(data.user, data.token); // Pass data to App
+        onLoggedIn(data.user, data.token);
       })
       .catch((err) => {
-        setError("Invalid username or password");
         console.error(err);
+        setError("Invalid username or password");
       });
   };
 
