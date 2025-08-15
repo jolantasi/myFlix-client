@@ -52,3 +52,7 @@ dist/myFlix-client.59712999.js.map
 dist/myFlix-client.ad93b51f.js.map
 dist/myFlix-client.9f367d21.css.map
 dist/index.js.map
+.DS_Store
+src/components/.DS_Store
+dist/myFlix-client.ad93b51f.js
+dist/myFlix-client.ad93b51f.js.map
