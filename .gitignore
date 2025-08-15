@@ -31,3 +31,24 @@ Thumbs.db
 # Editor settings
 .vscode/
 .idea/
+
+# macOS system files
+.DS_Store
+
+# Node modules
+node_modules/
+
+# Build/dist files
+dist/
+
+# Optional: other system files
+Thumbs.db
+dist/myFlix-client.ad93b51f.js
+*.map
+dist/myFlix-client.9f367d21.css
+dist/index.html
+dist/myFlix-client.59712999.js.map
+*.js
+dist/myFlix-client.ad93b51f.js.map
+dist/myFlix-client.9f367d21.css.map
+dist/index.js.map
