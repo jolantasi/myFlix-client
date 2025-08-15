@@ -1,7 +1,7 @@
 // src/signup-view/signup-view.jsx
 import React, { useState } from "react";
 
-export const SignupView = ({ onSignedUp }) => {
+export const SignupView = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -11,43 +11,53 @@ export const SignupView = ({ onSignedUp }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setError("");
+    setSuccess("");
 
-    // Basic validation
-    if (!username || !password || !email) {
-      setError("Please fill in all required fields.");
+    // Basic frontend validation
+    if (username.length < 5 || !/^[a-zA-Z0-9]+$/.test(username)) {
+      setError("Username must be at least 5 alphanumeric characters.");
+      return;
+    }
+    if (!password) {
+      setError("Password is required.");
+      return;
+    }
+    if (!email.includes("@")) {
+      setError("Email must be valid.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    setError(""); // Clear old errors
+    const data = {
+      username,
+      password,
+      email,
+      Birthday: birthday, // API expects capital B
+    };
 
     fetch("https://myflix-movieapi.onrender.com/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        Username: username,
-        Password: password,
-        Email: email,
-        Birthday: birthday
-      })
+      body: JSON.stringify(data),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
-          throw new Error("Signup failed. Try a different username.");
+          // Try to read detailed backend errors
+          const errData = await response.json().catch(() => null);
+          const message =
+            errData?.errors?.map((e) => e.msg).join(", ") ||
+            errData?.message ||
+            "Signup failed";
+          throw new Error(message);
         }
         return response.json();
       })
-      .then((data) => {
+      .then(() => {
         setSuccess("Signup successful! You can now log in.");
         setUsername("");
         setPassword("");
         setEmail("");
         setBirthday("");
-        if (onSignedUp) onSignedUp(data);
       })
       .catch((err) => setError(err.message));
   };
@@ -55,51 +65,63 @@ export const SignupView = ({ onSignedUp }) => {
   return (
     <div className="signup-view">
       <h2>Sign Up</h2>
+      {error && <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>}
+      {success && (
+        <div style={{ color: "green", marginBottom: "1rem" }}>{success}</div>
+      )}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username*:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+          <label>
+            Username*:
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </label>
         </div>
 
         <div>
-          <label>Password*:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <label>
+            Password*:
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </label>
         </div>
 
         <div>
-          <label>Email*:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <label>
+            Email*:
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
         </div>
 
         <div>
-          <label>Birthday:</label>
-          <input
-            type="date"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)}
-          />
+          <label>
+            Birthday:
+            <input
+              type="date"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
+            />
+          </label>
         </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {success && <p style={{ color: "green" }}>{success}</p>}
-
-        <button type="submit">Sign Up</button>
+        <button type="submit" style={{ marginTop: "1rem" }}>
+          Submit
+        </button>
       </form>
     </div>
   );
 };
+
