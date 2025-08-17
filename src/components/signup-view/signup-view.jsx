@@ -1,5 +1,6 @@
 // src/signup-view/signup-view.jsx
 import React, { useState } from "react";
+import { Form, Button } from 'react-bootstrap';
 
 export const SignupView = () => {
   const [username, setUsername] = useState("");
@@ -69,58 +70,50 @@ export const SignupView = () => {
       {success && (
         <div style={{ color: "green", marginBottom: "1rem" }}>{success}</div>
       )}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Username*:
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </label>
-        </div>
+      <Form onSubmit={handleSubmit}>
+  <Form.Group className="mb-3" controlId="username">
+    <Form.Label>Username*</Form.Label>
+    <Form.Control
+      type="text"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      required
+    />
+  </Form.Group>
 
-        <div>
-          <label>
-            Password*:
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </label>
-        </div>
+  <Form.Group className="mb-3" controlId="password">
+    <Form.Label>Password*</Form.Label>
+    <Form.Control
+      type="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+  </Form.Group>
 
-        <div>
-          <label>
-            Email*:
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </label>
-        </div>
+  <Form.Group className="mb-3" controlId="email">
+    <Form.Label>Email*</Form.Label>
+    <Form.Control
+      type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      required
+    />
+  </Form.Group>
 
-        <div>
-          <label>
-            Birthday:
-            <input
-              type="date"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
-            />
-          </label>
-        </div>
+  <Form.Group className="mb-3" controlId="birthday">
+    <Form.Label>Birthday</Form.Label>
+    <Form.Control
+      type="date"
+      value={birthday}
+      onChange={(e) => setBirthday(e.target.value)}
+    />
+  </Form.Group>
 
-        <button type="submit" style={{ marginTop: "1rem" }}>
-          Submit
-        </button>
-      </form>
+  <Button type="submit" variant="primary">
+    Submit
+  </Button>
+</Form>
     </div>
   );
 };
