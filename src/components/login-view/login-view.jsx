@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Form, Button } from "react-bootstrap";
 
 export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
@@ -42,33 +43,31 @@ export const LoginView = ({ onLoggedIn }) => {
     <div className="container mt-5">
       <h2>Login</h2>
       {error && <div className="alert alert-danger">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Username</label>
-          <input
-            type="text"
-            className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
+      <Form onSubmit={handleSubmit}>
+  <Form.Group className="mb-3" controlId="username">
+    <Form.Label>Username</Form.Label>
+    <Form.Control
+      type="text"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      required
+    />
+  </Form.Group>
 
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+  <Form.Group className="mb-3" controlId="password">
+    <Form.Label>Password</Form.Label>
+    <Form.Control
+      type="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+  </Form.Group>
 
-        <button type="submit" className="btn btn-primary">
-          Log In
-        </button>
-      </form>
+  <Button type="submit" variant="primary">
+    Log In
+  </Button>
+</Form>
     </div>
   );
 };

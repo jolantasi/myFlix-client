@@ -1,8 +1,8 @@
 {
   "scripts": {
-  "start": "parcel src/index.html",
-  "build": "parcel build src/index.html"
-},
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jolantasi/myFlix-client.git"
@@ -14,8 +14,10 @@
   },
   "homepage": "https://github.com/jolantasi/myFlix-client#readme",
   "dependencies": {
+    "bootstrap": "^5.3.7",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {

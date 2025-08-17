@@ -4,6 +4,8 @@ import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
+import { Row, Col, Form, Button, Card } from "react-bootstrap";
+import './main-view.scss';
 
 export const MainView = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -91,24 +93,29 @@ export const MainView = () => {
   }
 
   // Show movie list
-  return (
-    <div style={{ padding: "1rem" }}>
-      <button
-        type="button"
-        onClick={handleLogout}
-        style={{ marginBottom: "1rem" }}
-      >
-        Logout
-      </button>
+return (
+  <div>
+    <button
+  type="button"
+  onClick={handleLogout}
+  className="btn btn-primary"
+>
+  Logout
+</button>
 
-      <h1>Movie List</h1>
+    <h1>Movie List</h1>
+
+    {/* Wrap movies in a Row */}
+    <Row>
       {movies.map((movie) => (
-        <MovieCard
-          key={movie._id}
-          movie={movie}
-          onMovieClick={setSelectedMovie}
-        />
+        <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
+          <MovieCard
+            movie={movie}
+            onMovieClick={setSelectedMovie}
+          />
+        </Col>
       ))}
-    </div>
-  );
-};
+    </Row>
+  </div>
+);
+}
