@@ -4,61 +4,42 @@ import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
-import { Row, Col, Form, Button, Card } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import './main-view.scss';
 
 export const MainView = () => {
+  const [movies, setMovies] = useState([]);
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user")) || null
+  );
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-    }
-  }, []);
+  if (!token) return;
+
+  fetch("https://myflix-movieapi.onrender.com/movies", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      setMovies(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}, [token]);
 
   const handleLogout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    localStorage.clear();
   };
-
-  const movies = [
-    {
-      _id: "1",
-      title: "Inception",
-      description:
-        "A thief who steals corporate secrets through dream-sharing technology...",
-      image:
-        "https://media.themoviedb.org/t/p/w440_and_h660_face/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
-      genre: "Sci-Fi",
-      director: "Christopher Nolan",
-    },
-    {
-      _id: "2",
-      title: "The Matrix",
-      description:
-        "A computer hacker learns about the true nature of reality and his role in the war...",
-      image:
-        "https://media.themoviedb.org/t/p/w440_and_h660_face/sRaupdJawe6UTS0t77vwJoLjd7h.jpg",
-      genre: "Action",
-      director: "The Wachowskis",
-    },
-    {
-      _id: "3",
-      title: "Interstellar",
-      description: "A team of explorers travel through a wormhole in space...",
-      image:
-        "https://image.tmdb.org/t/p/w500/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg",
-      genre: "Adventure",
-      director: "Christopher Nolan",
-    },
-  ];
 
   // Show movie details if one is selected
   if (selectedMovie) {
@@ -83,9 +64,7 @@ export const MainView = () => {
           }}
         />
 
-        <div style={{ textAlign: "center", margin: "1rem 0" }}>
-          or
-        </div>
+        <div style={{ textAlign: "center", margin: "1rem 0" }}>or</div>
 
         <SignupView />
       </div>
@@ -93,29 +72,32 @@ export const MainView = () => {
   }
 
   // Show movie list
-return (
-  <div>
-    <button
-  type="button"
-  onClick={handleLogout}
-  className="btn btn-primary"
->
-  Logout
-</button>
+  return (
+    <div className="main-view">
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="btn btn-primary"
+      >
+        Logout
+      </button>
 
-    <h1>Movie List</h1>
+      <h1>Movie List</h1>
 
-    {/* Wrap movies in a Row */}
-    <Row>
-      {movies.map((movie) => (
-        <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
-          <MovieCard
-            movie={movie}
-            onMovieClick={setSelectedMovie}
-          />
-        </Col>
-      ))}
-    </Row>
-  </div>
-);
-}
+      <Row>
+        {movies.length === 0 ? (
+          <p>No movies found</p>
+        ) : (
+          movies.map((movie) => (
+            <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
+              <MovieCard
+                movie={movie}
+                onMovieClick={setSelectedMovie}
+              />
+            </Col>
+          ))
+        )}
+      </Row>
+    </div>
+  );
+};
