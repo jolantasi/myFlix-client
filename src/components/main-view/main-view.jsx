@@ -1,4 +1,3 @@
-// src/main-view/main-view.jsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { MovieCard } from "../movie-card/movie-card";
@@ -6,18 +5,18 @@ import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { Row, Col } from "react-bootstrap";
-import { NavigationBar } from "../components/navigation-bar/NavigationBar";
+import { NavigationBar } from "../navigation-bar/navigation-bar";
+import { ProfileView } from "../profile-view/profile-view";
 import "./main-view.scss";
 
-
 // Wrapper for MovieView that fetches the movie based on :movieId
-const MovieViewWrapper = ({ movies }) => {
+const MovieViewWrapper = ({ movies, user, token, onFavorite }) => {
   const { movieId } = useParams();
   const movie = movies.find((m) => m._id === movieId);
 
   if (!movie) return <p>Movie not found</p>;
 
-  return <MovieView movie={movie} />;
+  return <MovieView movie={movie} user={user} token={token} onFavorite={onFavorite} />;
 };
 
 export const MainView = () => {
@@ -45,6 +44,13 @@ export const MainView = () => {
     localStorage.clear();
   };
 
+  // ✅ Updated: handleFavorite receives updatedUser from backend
+  const handleFavorite = (updatedUser) => {
+    setUser(updatedUser); // update state
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    alert("Movie added to favorites!");
+  };
+
   return (
     <BrowserRouter>
       {user && (
@@ -56,10 +62,7 @@ export const MainView = () => {
       <NavigationBar user={user} onLogout={handleLogout} />
 
       <Routes>
-        {/* Redirect root */}
         <Route path="/" element={user ? <Navigate to="/movies" /> : <Navigate to="/login" />} />
-
-        {/* Login */}
         <Route
           path="/login"
           element={
@@ -81,11 +84,27 @@ export const MainView = () => {
             )
           }
         />
-
-        {/* Signup */}
         <Route path="/signup" element={user ? <Navigate to="/movies" /> : <SignupView />} />
-
-        {/* Movies list */}
+        <Route
+          path="/profile"
+          element={
+            user ? (
+              <ProfileView
+                user={user}
+                token={token}
+                movies={movies}
+                onUserUpdate={(updatedUser) => setUser(updatedUser)}
+                onUserDelete={() => {
+                  setUser(null);
+                  setToken(null);
+                  localStorage.clear();
+                }}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
         <Route
           path="/movies"
           element={
@@ -93,15 +112,17 @@ export const MainView = () => {
               <div className="main-view">
                 <h1>Movie List</h1>
                 <Row>
-                  {movies.length === 0 ? (
-                    <p>No movies found</p>
-                  ) : (
-                    movies.map((movie) => (
-                      <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
-                        <MovieCard movie={movie} />
-                      </Col>
-                    ))
-                  )}
+                  {movies.map((movie) => (
+                    <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
+                      <MovieCard
+                        movie={movie}
+                        user={user}
+                        token={token}
+                        onFavorite={handleFavorite}
+                        // Clicking card navigates to movie view
+                      />
+                    </Col>
+                  ))}
                 </Row>
               </div>
             ) : (
@@ -109,11 +130,9 @@ export const MainView = () => {
             )
           }
         />
-
-        {/* Single Movie View */}
         <Route
           path="/movies/:movieId"
-          element={user ? <MovieViewWrapper movies={movies} /> : <Navigate to="/login" />}
+          element={user ? <MovieViewWrapper movies={movies} user={user} token={token} onFavorite={handleFavorite} /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>

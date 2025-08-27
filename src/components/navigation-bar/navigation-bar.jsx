@@ -1,8 +1,8 @@
 // src/components/navigation-bar/NavigationBar.jsx
 import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { NavigationBar } from "../components/navigation-bar/NavigationBar";
+import { NavLink, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 
 export const NavigationBar = ({ user, onLogout }) => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export const NavigationBar = ({ user, onLogout }) => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand as={NavLink} to="/">
           MyFlix
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -23,20 +23,28 @@ export const NavigationBar = ({ user, onLogout }) => {
           <Nav className="ms-auto">
             {!user && (
               <>
-                <Nav.Link as={Link} to="/login">
+                <Nav.Link as={NavLink} to="/login">
                   Login
                 </Nav.Link>
-                <Nav.Link as={Link} to="/signup">
+                <Nav.Link as={NavLink} to="/signup">
                   Signup
                 </Nav.Link>
               </>
             )}
             {user && (
               <>
-                <Nav.Link as={Link} to="/movies">
+                <Nav.Link
+                  as={NavLink}
+                  to="/movies"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
                   Home
                 </Nav.Link>
-                <Nav.Link as={Link} to="/profile">
+                <Nav.Link
+                  as={NavLink}
+                  to="/profile"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
                   Profile
                 </Nav.Link>
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>

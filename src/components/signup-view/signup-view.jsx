@@ -1,6 +1,7 @@
 // src/signup-view/signup-view.jsx
 import React, { useState } from "react";
 import { Form, Button } from 'react-bootstrap';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 
 export const SignupView = () => {
   const [username, setUsername] = useState("");
