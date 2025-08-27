@@ -6,7 +6,9 @@ import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { Row, Col } from "react-bootstrap";
+import { NavigationBar } from "../components/navigation-bar/NavigationBar";
 import "./main-view.scss";
+
 
 // Wrapper for MovieView that fetches the movie based on :movieId
 const MovieViewWrapper = ({ movies }) => {
@@ -50,6 +52,8 @@ export const MainView = () => {
           Logout
         </button>
       )}
+
+      <NavigationBar user={user} onLogout={handleLogout} />
 
       <Routes>
         {/* Redirect root */}
