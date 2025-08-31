@@ -1,25 +1,11 @@
+// src/components/movie-view/movie-view.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import PropTypes from "prop-types";
 
-export const MovieView = ({ movie, user, token, onFavorite }) => {
+export const MovieView = ({ movie, onFavorite }) => {
   const navigate = useNavigate();
-
-  const handleFavorite = () => {
-    if (!user || !token) return;
-
-    fetch(`https://myflix-movieapi.onrender.com/users/${user.username}/movies/${movie._id}`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to add favorite");
-        return res.json();
-      })
-      .then(() => onFavorite(movie))
-      .catch((err) => console.error(err));
-  };
 
   return (
     <div className="movie-view container mt-4">
@@ -27,16 +13,43 @@ export const MovieView = ({ movie, user, token, onFavorite }) => {
         Back
       </Button>
 
-      <h2>{movie.title}</h2>
-      <p>{movie.description}</p>
-      {movie.genre && <p><strong>Genre:</strong> {movie.genre.name}</p>}
-      {movie.director && <p><strong>Director:</strong> {movie.director.name}</p>}
+      <div className="d-flex flex-column flex-md-row align-items-start mb-3">
+        <img
+          src={movie.imageUrl}
+          alt={`${movie.title} poster`}
+          style={{
+            width: "14rem",
+            height: "350px",
+            objectFit: "cover",
+            borderRadius: "10px",
+            marginRight: "20px"
+          }}
+        />
 
-      {user && (
-        <Button variant="warning" onClick={handleFavorite}>
-          Favorite
-        </Button>
-      )}
+        <div>
+          <h2>{movie.title}</h2>
+          <p>{movie.description}</p>
+          {movie.genre && (
+            <p>
+              <strong>Genre:</strong> {movie.genre.name}
+            </p>
+          )}
+          {movie.director && (
+            <p>
+              <strong>Director:</strong> {movie.director.name}
+            </p>
+          )}
+
+          <Button variant="warning" onClick={() => onFavorite?.(movie)}>
+            Favorite
+          </Button>
+        </div>
+      </div>
     </div>
   );
+};
+
+MovieView.propTypes = {
+  movie: PropTypes.object.isRequired,
+  onFavorite: PropTypes.func
 };

@@ -19,23 +19,65 @@ const MovieViewWrapper = ({ movies, user, token, onFavorite }) => {
   return <MovieView movie={movie} user={user} token={token} onFavorite={onFavorite} />;
 };
 
+// ✅ Normalize user data to handle backend inconsistencies
+const normalizeUser = (rawUser) => ({
+  username: rawUser.Username || rawUser.username || "",
+  email: rawUser.Email || rawUser.email || "",
+  Birthday: rawUser.Birthday || rawUser.birthday || "",
+  favoriteMovies: rawUser.FavoriteMovies || rawUser.favoriteMovies || []
+});
+
 export const MainView = () => {
   const [movies, setMovies] = useState([]);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? normalizeUser(JSON.parse(savedUser)) : null;
+  });
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      console.log("No token found, skipping movie fetch");
+      return;
+    }
 
+    console.log("Fetching movies with token:", token.substring(0, 20) + "...");
+    
     fetch("https://myflix-movieapi.onrender.com/movies", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
     })
       .then((response) => {
-        if (!response.ok) throw new Error("Failed to fetch movies");
+        console.log("Response status:", response.status);
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Token is invalid/expired, clear it
+            setUser(null);
+            setToken(null);
+            localStorage.clear();
+            throw new Error("Session expired, please login again");
+          }
+          throw new Error(`HTTP ${response.status}: Failed to fetch movies`);
+        }
         return response.json();
       })
-      .then((data) => setMovies(data))
-      .catch((err) => console.error(err));
+      .then((data) => {
+        console.log("Movies fetched successfully:", data.length);
+        setMovies(data);
+        setFetchError(null);
+      })
+      .catch((err) => {
+        console.error("Error fetching movies:", err);
+        setFetchError(err.message);
+        // If it's a network error, show a user-friendly message
+        if (err.message.includes("Failed to fetch")) {
+          console.error("Network error: Backend server might be down or unreachable");
+          setFetchError("Unable to connect to server. Please check your internet connection.");
+        }
+      });
   }, [token]);
 
   const handleLogout = () => {
@@ -44,21 +86,96 @@ export const MainView = () => {
     localStorage.clear();
   };
 
-  // ✅ Updated: handleFavorite receives updatedUser from backend
-  const handleFavorite = (updatedUser) => {
-    setUser(updatedUser); // update state
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    alert("Movie added to favorites!");
+  // ✅ Handle adding favorites from MovieCard - makes API call
+  const handleFavorite = (movie) => {
+    console.log("Adding movie to favorites from MovieCard:", movie._id);
+    console.log("User:", user?.username || "NO USERNAME");
+    
+    if (!user?.username) {
+      alert("Error: User not properly logged in. Please refresh and try again.");
+      return;
+    }
+    
+    fetch(`https://myflix-movieapi.onrender.com/users/${user.username}/movies/${movie._id}`, {
+      method: "POST",
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then(async (res) => {
+        console.log("Response status:", res.status);
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.log("Error response:", errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        return res.json();
+      })
+      .then((updatedUser) => {
+        console.log("Updated user from MovieCard favorite:", updatedUser);
+        const normalizedUser = normalizeUser(updatedUser);
+        setUser(normalizedUser);
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+        alert("Movie added to favorites!");
+      })
+      .catch((err) => {
+        console.error("Full error:", err);
+        alert("Error adding to favorites: " + err.message);
+      });
+  };
+
+  // ✅ Handle user updates (for profile updates)
+  const handleUserUpdate = (updatedUser) => {
+    const normalizedUser = normalizeUser(updatedUser);
+    setUser(normalizedUser);
+    localStorage.setItem("user", JSON.stringify(normalizedUser));
+    console.log("User updated:", normalizedUser); // Debug log
+  };
+
+  // ✅ Handle adding favorites from MovieView
+  const handleMovieViewFavorite = (movie) => {
+    console.log("Adding movie to favorites:", movie._id);
+    console.log("User:", user?.username || "NO USERNAME");
+    console.log("Full user object:", user);
+    console.log("Token:", token ? token.substring(0, 20) + "..." : "NO TOKEN");
+    
+    if (!user?.username) {
+      alert("Error: User not properly logged in. Please refresh and try again.");
+      return;
+    }
+    
+    fetch(`https://myflix-movieapi.onrender.com/users/${user.username}/movies/${movie._id}`, {
+      method: "POST",
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then(async (res) => {
+        console.log("Response status:", res.status);
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.log("Error response:", errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        return res.json();
+      })
+      .then((updatedUser) => {
+        console.log("Updated user:", updatedUser);
+        const normalizedUser = normalizeUser(updatedUser);
+        setUser(normalizedUser);
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+        alert("Movie added to favorites!");
+      })
+      .catch((err) => {
+        console.error("Full error:", err);
+        alert("Error adding to favorites: " + err.message);
+      });
   };
 
   return (
     <BrowserRouter>
-      {user && (
-        <button type="button" onClick={handleLogout} className="btn btn-primary m-3">
-          Logout
-        </button>
-      )}
-
       <NavigationBar user={user} onLogout={handleLogout} />
 
       <Routes>
@@ -72,9 +189,10 @@ export const MainView = () => {
               <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
                 <LoginView
                   onLoggedIn={(userData, token) => {
-                    setUser(userData);
+                    const normalizedUser = normalizeUser(userData);
+                    setUser(normalizedUser);
                     setToken(token);
-                    localStorage.setItem("user", JSON.stringify(userData));
+                    localStorage.setItem("user", JSON.stringify(normalizedUser));
                     localStorage.setItem("token", token);
                   }}
                 />
@@ -93,7 +211,7 @@ export const MainView = () => {
                 user={user}
                 token={token}
                 movies={movies}
-                onUserUpdate={(updatedUser) => setUser(updatedUser)}
+                onUserUpdate={handleUserUpdate}
                 onUserDelete={() => {
                   setUser(null);
                   setToken(null);
@@ -111,19 +229,30 @@ export const MainView = () => {
             user ? (
               <div className="main-view">
                 <h1>Movie List</h1>
-                <Row>
-                  {movies.map((movie) => (
-                    <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
-                      <MovieCard
-                        movie={movie}
-                        user={user}
-                        token={token}
-                        onFavorite={handleFavorite}
-                        // Clicking card navigates to movie view
-                      />
-                    </Col>
-                  ))}
-                </Row>
+                {fetchError && (
+                  <div className="alert alert-danger" role="alert">
+                    Error: {fetchError}
+                  </div>
+                )}
+                {movies.length === 0 && !fetchError ? (
+                  <div className="alert alert-info" role="alert">
+                    Loading movies...
+                  </div>
+                ) : (
+                  <Row>
+                    {movies.map((movie) => (
+                      <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
+                        <MovieCard
+                          movie={movie}
+                          user={user}
+                          token={token}
+                          onFavorite={handleFavorite}
+                          // Clicking card navigates to movie view
+                        />
+                      </Col>
+                    ))}
+                  </Row>
+                )}
               </div>
             ) : (
               <Navigate to="/login" />
@@ -132,7 +261,7 @@ export const MainView = () => {
         />
         <Route
           path="/movies/:movieId"
-          element={user ? <MovieViewWrapper movies={movies} user={user} token={token} onFavorite={handleFavorite} /> : <Navigate to="/login" />}
+          element={user ? <MovieViewWrapper movies={movies} user={user} token={token} onFavorite={handleMovieViewFavorite} /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>
