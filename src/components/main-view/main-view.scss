@@ -5,3 +5,10 @@
   border: none;
   border-radius: 4px;
 }
+
+// src/main-view/main-view.scss or src/App.scss
+
+.navbar-nav .nav-link.active {
+  font-weight: bold;
+  color: #f0ad4e !important; // golden highlight
+}
