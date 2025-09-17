@@ -51,7 +51,3 @@ Movie enthusiasts who want to:
 - Global state management with Redux
 - UI enhancements and animations
 - Additional features like movie ratings or reviews
-
-```
-
-```
