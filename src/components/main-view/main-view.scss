@@ -1,14 +1,45 @@
-.back-button {
-  padding: 4px 12px;
-  color: whitesmoke;
-  background-color: dodgerblue;
-  border: none;
-  border-radius: 4px;
-}
 
-// src/main-view/main-view.scss or src/App.scss
 
 .navbar-nav .nav-link.active {
   font-weight: bold;
   color: #f0ad4e !important; // golden highlight
+}
+
+body, html, #root {
+  background-color: #000000; /* black background */
+  color: #f0ad4e; /* golden text */
+  min-height: 100%;
+  font-family: Arial, sans-serif; /* optional: classy font */
+}
+
+.main-view {
+  padding: 1rem;
+}
+
+/* Cards, forms, alerts */
+.card, .alert, .form-control {
+  background-color: #1a1a1a; /* slightly lighter black for contrast */
+  color: #f0ad4e; /* golden text */
+  border: 1px solid #333; /* optional border */
+}
+
+/* Links */
+a {
+  color: #FFD700;
+}
+
+a:hover {
+  color: #FFC107; /* slightly brighter gold on hover */
+}
+
+/* Buttons */
+.btn {
+  background-color: #FFD700;
+  color: #000000;
+  border: none;
+}
+
+.btn:hover {
+  background-color: #FFC107;
+  color: #000000;
 }
