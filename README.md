@@ -26,6 +26,7 @@ A **single-page movie app** built with **React**, providing users with an intera
 
 ## Installation
 
+```
 git clone <repository-url>
 cd myFlix-client
 npm install
@@ -33,6 +34,7 @@ npm start
 Open in browser: http://localhost:1234
 Build for production:
 npm run build
+```
 
 ## Users
 
