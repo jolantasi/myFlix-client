@@ -46,12 +46,6 @@ Movie enthusiasts who want to:
 
 ---
 
-## Wireframes
-
-Download wireframes for all views: [MYFLIX PROJECT WIREFRAMES (.zip)]
-
----
-
 ## Future Improvements
 
 - Global state management with Redux
