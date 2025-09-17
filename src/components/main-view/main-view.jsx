@@ -4,7 +4,7 @@ import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Form } from "react-bootstrap";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
 import "./main-view.scss";
@@ -35,6 +35,9 @@ export const MainView = () => {
   });
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [fetchError, setFetchError] = useState(null);
+
+  // ✅ Search state
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (!token) {
@@ -79,6 +82,11 @@ export const MainView = () => {
         }
       });
   }, [token]);
+
+  // ✅ Use lowercase "title" from backend
+const filteredMovies = movies.filter((movie) =>
+  movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   const handleLogout = () => {
     setUser(null);
@@ -229,6 +237,17 @@ export const MainView = () => {
             user ? (
               <div className="main-view">
                 <h1>Movie List</h1>
+
+                {/* ✅ Search bar */}
+                <Form className="mb-4">
+                  <Form.Control
+                    type="text"
+                    placeholder="Search movies..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </Form>
+
                 {fetchError && (
                   <div className="alert alert-danger" role="alert">
                     Error: {fetchError}
@@ -240,18 +259,17 @@ export const MainView = () => {
                   </div>
                 ) : (
                   <Row>
-                    {movies.map((movie) => (
-                      <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
-                        <MovieCard
-                          movie={movie}
-                          user={user}
-                          token={token}
-                          onFavorite={handleFavorite}
-                          // Clicking card navigates to movie view
-                        />
-                      </Col>
-                    ))}
-                  </Row>
+                   {filteredMovies.map((movie) => (
+                   <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
+                   <MovieCard
+                    movie={movie}
+                    user={user}
+                    token={token}
+                    onFavorite={handleFavorite}
+                   />
+                </Col>
+               ))}
+                </Row>
                 )}
               </div>
             ) : (
