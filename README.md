@@ -26,7 +26,6 @@ A **single-page movie app** built with **React**, providing users with an intera
 
 ## Installation
 
-```bash
 git clone <repository-url>
 cd myFlix-client
 npm install
@@ -56,4 +55,7 @@ Download wireframes for all views: [MYFLIX PROJECT WIREFRAMES (.zip)]
 - Global state management with Redux
 - UI enhancements and animations
 - Additional features like movie ratings or reviews
+
+```
+
 ```
